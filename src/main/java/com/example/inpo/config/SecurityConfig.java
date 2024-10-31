@@ -1,14 +1,14 @@
-package com.example.boardapi.config;
+package com.example.inpo.config;
 
 
-import com.example.boardapi.exception.CustomException;
-import com.example.boardapi.exception.ErrorCode;
-import com.example.boardapi.jwt.JWTFilter;
-import com.example.boardapi.jwt.JWTService;
-import com.example.boardapi.jwt.JWTUtil;
-import com.example.boardapi.repository.MemberRepository;
-import com.example.boardapi.user.LoginFilter;
-import com.example.boardapi.util.CookieUtils;
+import com.example.inpo.exception.CustomException;
+import com.example.inpo.exception.ErrorCode;
+import com.example.inpo.jwt.JWTFilter;
+import com.example.inpo.jwt.JWTService;
+import com.example.inpo.jwt.JWTUtil;
+import com.example.inpo.repository.MemberRepository;
+import com.example.inpo.user.LoginFilter;
+import com.example.inpo.util.CookieUtils;
 import com.example.inpo.oauth.service.CustomOAuth2UserService;
 import io.jsonwebtoken.Header;
 import jakarta.servlet.http.HttpServletRequest;
