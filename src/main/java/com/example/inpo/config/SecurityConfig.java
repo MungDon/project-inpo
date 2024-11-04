@@ -6,12 +6,14 @@ import com.example.inpo.exception.ErrorCode;
 import com.example.inpo.jwt.JWTFilter;
 import com.example.inpo.jwt.JWTService;
 import com.example.inpo.jwt.JWTUtil;
+import com.example.inpo.oauth.handler.OAuth2AuthenticationFailureHandler;
+import com.example.inpo.oauth.handler.OAuth2AuthenticationSuccessHandler;
+import com.example.inpo.oauth.service.CustomOAuth2UserService;
 import com.example.inpo.repository.MemberRepository;
 import com.example.inpo.user.LoginFilter;
-import com.example.inpo.util.CookieUtils;
-import com.example.inpo.oauth.service.CustomOAuth2UserService;
-import io.jsonwebtoken.Header;
+import com.example.inpo.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +33,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import static com.example.inpo.utils.CookieUtils.ACCESS_TOKEN_COOKIE_NAME;
-import static com.example.inpo.utils.CookieUtils.REFRESH_TOKEN_COOKIE_NAME;
+import static com.example.inpo.utils.CookieUtil.ACCESS_TOKEN_COOKIE_NAME;
+import static com.example.inpo.utils.CookieUtil.REFRESH_TOKEN_COOKIE_NAME;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
@@ -91,15 +93,14 @@ public class SecurityConfig {
                                 .clearAuthentication(true)
                                 .invalidateHttpSession(true)
                                 .logoutSuccessHandler((request, response, authentication) ->{
-                                    String refreshCookie = CookieUtils.getCookie(request,REFRESH_TOKEN_COOKIE_NAME).orElseThrow(()->
+                                    String refreshCookie = CookieUtil.getCookie(request,REFRESH_TOKEN_COOKIE_NAME).orElseThrow(()->
                                             new CustomException(ErrorCode.REFRESH_TOKEN_NOT_VALID));
                                     jwtService.removeToken(refreshCookie);
-                                    CookieUtils.deleteCookie(request, response, ACCESS_TOKEN_COOKIE_NAME);
-                                    CookieUtils.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
-                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    CookieUtil.deleteCookie(request, response, ACCESS_TOKEN_COOKIE_NAME);
+                                    CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
                                     response.setCharacterEncoding("UTF-8");
-                                    response.setStatus(HttpStatus.OK.value());
-                                    response.getWriter().write("{\"success\": true, \"message\": \"로그아웃 되었습니다\"}");
+                                    response.setStatus(HttpServletResponse.SC_OK);
+                                    response.sendRedirect("/home");
                                 }))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(antMatcher("/error, /home")).permitAll()
